@@ -66,7 +66,6 @@ abstract class AbstractStorageFunTest : WordSpec() {
 
     private val vcs1 = VcsInfo(VcsType("type"), "url1", "revision", "resolvedRevision", "path")
     private val vcs2 = VcsInfo(VcsType("type"), "url2", "revision", "resolvedRevision", "path")
-    private val vcsWithoutRevision = VcsInfo(VcsType("type"), "url", "", "")
 
     private val pkg1 = Package.EMPTY.copy(
         id = id1,
@@ -82,8 +81,6 @@ abstract class AbstractStorageFunTest : WordSpec() {
         vcsProcessed = vcs2.normalize()
     )
 
-    private val pkgWithoutRevision = pkg1.copy(vcs = vcsWithoutRevision, vcsProcessed = vcsWithoutRevision.normalize())
-
     private val downloadTime1 = Instant.EPOCH + Duration.ofDays(1)
     private val downloadTime2 = Instant.EPOCH + Duration.ofDays(2)
 
@@ -93,10 +90,6 @@ abstract class AbstractStorageFunTest : WordSpec() {
     private val provenanceWithSourceArtifact2 = ArtifactProvenance(sourceArtifact = sourceArtifact2)
     private val provenanceWithVcsInfo2 = RepositoryProvenance(vcsInfo = vcs2)
 
-    private val provenanceWithOriginalVcsInfo = RepositoryProvenance(
-        vcsInfo = vcs1,
-        originalVcsInfo = pkgWithoutRevision.vcsProcessed
-    )
     private val provenanceEmpty = UnknownProvenance
 
     private val scannerDetails1 = ScannerDetails("name 1", "1.0.0", "config 1")
@@ -320,17 +313,6 @@ abstract class AbstractStorageFunTest : WordSpec() {
                     scanResultVcsMatching
                 )
             }
-
-            "find a scan result if the revision was detected from a version" {
-                val storage = createStorage()
-                val scanResult = ScanResult(provenanceWithOriginalVcsInfo, scannerDetails1, scanSummaryWithFiles)
-
-                storage.add(id1, scanResult) should beSuccess()
-                val readResult = storage.read(pkgWithoutRevision, criteriaForDetails(scannerDetails1))
-
-                readResult should beSuccess()
-                (readResult as Success).result should containExactly(scanResult)
-            }
         }
 
         "Reading scan results for multiple packages" should {
@@ -545,21 +527,6 @@ abstract class AbstractStorageFunTest : WordSpec() {
                         scanResultSourceArtifactMatching2,
                         scanResultVcsMatching2
                     )
-                }
-            }
-
-            "find a scan result if the revision was detected from a version" {
-                val storage = createStorage()
-                val scanResult = ScanResult(provenanceWithOriginalVcsInfo, scannerDetails1, scanSummaryWithFiles)
-
-                val addResult = storage.add(id1, scanResult)
-                val readResult = storage.read(listOf(pkgWithoutRevision), criteriaForDetails(scannerDetails1))
-
-                addResult should beSuccess()
-                readResult should beSuccess()
-                (readResult as Success).result.let { result ->
-                    result.keys should containExactly(id1)
-                    result[id1] should containExactly(scanResult)
                 }
             }
         }
