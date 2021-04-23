@@ -124,6 +124,7 @@ class SummaryView extends React.Component {
             detectedLicensesProcessed,
             issues,
             levels,
+            metaData,
             packages,
             projects,
             repository: { vcsProcessed },
@@ -166,6 +167,7 @@ class SummaryView extends React.Component {
                                 <b>
                                     {url}
                                 </b>
+                                {metaData.startTime}
                             </Item>
                             <Item>
                                 Found
