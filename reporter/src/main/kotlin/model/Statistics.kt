@@ -19,6 +19,7 @@
 
 package org.ossreviewtoolkit.reporter.model
 
+import java.time.Instant
 import java.util.SortedMap
 import java.util.SortedSet
 
@@ -52,7 +53,12 @@ data class Statistics(
     /**
      * Statistics of used licenses.
      */
-    val licenses: LicenseStatistics
+    val licenses: LicenseStatistics,
+
+    /**
+     * FIXME: This is not the correct place
+     */
+    val startTime: Instant
 )
 
 /**

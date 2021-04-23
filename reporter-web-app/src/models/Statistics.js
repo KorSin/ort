@@ -30,6 +30,8 @@ class Statistics {
 
     #licenses;
 
+    #startTime;
+
     constructor(obj) {
         if (obj instanceof Object) {
             if (obj.dependency_tree || obj.dependencyTree) {
@@ -51,6 +53,9 @@ class Statistics {
             if (obj.licenses) {
                 this.#licenses = new LicenseStatistics(obj.licenses);
             }
+            if (obj.start_time || obj.startTime) {
+                const startTime = obj.start_time || obj.startTime;
+            }
         }
     }
 
@@ -68,6 +73,10 @@ class Statistics {
 
     get openRuleViolations() {
         return this.#openRuleViolations;
+    }
+
+    get getStartTime() {
+        return this.#startTime;
     }
 }
 

@@ -19,6 +19,7 @@
 
 package org.ossreviewtoolkit.reporter.utils
 
+import java.time.Instant
 import java.util.SortedMap
 
 import org.ossreviewtoolkit.model.OrtResult
@@ -58,7 +59,8 @@ internal class StatisticsCalculator {
             includedScopes = getIncludedScopes(ortResult).toSortedSet(),
             excludedScopes = getExcludedScopes(ortResult).toSortedSet()
         ),
-        licenses = getLicenseStatistics(ortResult, licenseInfoResolver)
+        licenses = getLicenseStatistics(ortResult, licenseInfoResolver),
+        startTime = ortResult.analyzer?.startTime ?: Instant.now()
     )
 
     private fun getOpenRuleViolations(ortResult: OrtResult, resolutionProvider: ResolutionProvider): IssueStatistics {
