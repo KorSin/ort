@@ -25,7 +25,7 @@ import org.ossreviewtoolkit.analyzer.PackageCurationProvider
 import org.ossreviewtoolkit.model.FileFormat
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.PackageCuration
-import org.ossreviewtoolkit.model.readValue
+import org.ossreviewtoolkit.model.readValueOrDefault
 
 /**
  * A [PackageCurationProvider] that loads [PackageCuration]s from a single file. Supports all file formats specified
@@ -33,7 +33,7 @@ import org.ossreviewtoolkit.model.readValue
  */
 class FilePackageCurationProvider(curationFile: File) : PackageCurationProvider {
     internal val packageCurations: List<PackageCuration> by lazy {
-        curationFile.readValue<List<PackageCuration>>()
+        curationFile.readValueOrDefault(emptyList())
     }
 
     override fun getCurationsFor(pkgId: Identifier) = packageCurations.filter { it.isApplicable(pkgId) }

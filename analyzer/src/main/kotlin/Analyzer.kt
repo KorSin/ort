@@ -35,7 +35,7 @@ import org.ossreviewtoolkit.model.Repository
 import org.ossreviewtoolkit.model.VcsInfo
 import org.ossreviewtoolkit.model.config.AnalyzerConfiguration
 import org.ossreviewtoolkit.model.config.RepositoryConfiguration
-import org.ossreviewtoolkit.model.readValue
+import org.ossreviewtoolkit.model.readValueOrNull
 import org.ossreviewtoolkit.utils.Environment
 import org.ossreviewtoolkit.utils.ORT_REPO_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.log
@@ -57,13 +57,11 @@ class Analyzer(private val config: AnalyzerConfiguration) {
         val actualRepositoryConfigurationFile = repositoryConfigurationFile
             ?: absoluteProjectPath.resolve(ORT_REPO_CONFIG_FILENAME)
 
-        val repositoryConfiguration = if (actualRepositoryConfigurationFile.isFile) {
+        val repositoryConfiguration = actualRepositoryConfigurationFile.takeIf { it.isFile }?.let {
             log.info { "Using configuration file '${actualRepositoryConfigurationFile.absolutePath}'." }
 
-            actualRepositoryConfigurationFile.readValue()
-        } else {
-            RepositoryConfiguration()
-        }
+            actualRepositoryConfigurationFile.readValueOrNull()
+        } ?: RepositoryConfiguration()
 
         log.debug { "Using the following configuration settings:\n$repositoryConfiguration" }
 

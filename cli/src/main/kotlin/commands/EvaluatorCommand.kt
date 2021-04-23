@@ -45,9 +45,11 @@ import org.ossreviewtoolkit.GroupTypes.StringType
 import org.ossreviewtoolkit.evaluator.Evaluator
 import org.ossreviewtoolkit.model.FileFormat
 import org.ossreviewtoolkit.model.OrtResult
+import org.ossreviewtoolkit.model.PackageCuration
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.model.config.CopyrightGarbage
 import org.ossreviewtoolkit.model.config.LicenseFilenamePatterns
+import org.ossreviewtoolkit.model.config.RepositoryConfiguration
 import org.ossreviewtoolkit.model.config.createFileArchiver
 import org.ossreviewtoolkit.model.config.orEmpty
 import org.ossreviewtoolkit.model.licenses.DefaultLicenseInfoProvider
@@ -55,6 +57,7 @@ import org.ossreviewtoolkit.model.licenses.LicenseClassifications
 import org.ossreviewtoolkit.model.licenses.LicenseInfoResolver
 import org.ossreviewtoolkit.model.licenses.orEmpty
 import org.ossreviewtoolkit.model.readValue
+import org.ossreviewtoolkit.model.readValueOrDefault
 import org.ossreviewtoolkit.model.utils.mergeLabels
 import org.ossreviewtoolkit.model.writeValue
 import org.ossreviewtoolkit.utils.ORT_COPYRIGHT_GARBAGE_FILENAME
@@ -239,11 +242,13 @@ class EvaluatorCommand : CliktCommand(name = "evaluate", help = "Evaluate ORT re
         }
 
         repositoryConfigurationFile?.let {
-            ortResultInput = ortResultInput?.replaceConfig(it.readValue())
+            val config = it.readValueOrDefault(RepositoryConfiguration())
+            ortResultInput = ortResultInput?.replaceConfig(config)
         }
 
         packageCurationsFile?.let {
-            ortResultInput = ortResultInput?.replacePackageCurations(it.readValue())
+            val curations = it.readValueOrDefault(emptyList<PackageCuration>())
+            ortResultInput = ortResultInput?.replacePackageCurations(curations)
         }
 
         val finalOrtResult = requireNotNull(ortResultInput) {
